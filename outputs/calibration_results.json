@@ -1,0 +1,17 @@
+{
+  "temperature": 1.1264986991882324,
+  "validation_samples": 1603,
+  "test_samples": 2004,
+  "before_calibration": {
+    "accuracy": 0.852776044915783,
+    "macro_f1": 0.7618773146323116,
+    "ece": 0.05779060238273814,
+    "brier_score": 0.22821791470050812
+  },
+  "after_calibration": {
+    "accuracy": 0.852776044915783,
+    "macro_f1": 0.7618773146323116,
+    "ece": 0.04328670786344446,
+    "brier_score": 0.22477854788303375
+  }
+}
