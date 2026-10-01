@@ -3,10 +3,8 @@ torchvision
 pandas
 numpy
 scikit-learn
-matplotlib
-seaborn
 Pillow
 tqdm
-fastapi
-uvicorn[standard]
-python-multipart
+flask
+flask-cors
+gunicorn
