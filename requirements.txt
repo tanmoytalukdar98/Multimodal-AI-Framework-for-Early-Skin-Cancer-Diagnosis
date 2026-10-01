@@ -7,3 +7,6 @@ matplotlib
 seaborn
 Pillow
 tqdm
+fastapi
+uvicorn[standard]
+python-multipart

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multimodal AI · Skin Lesion Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div id="toast" class="toast" role="alert" hidden></div>
+
+  <div class="shell">
+    <header class="header">
+      <div class="header-left">
+        <span class="live-dot"></span>
+        <p class="kicker">Multimodal AI · Dermatology research prototype</p>
+      </div>
+      <div class="header-right">
+        <span id="model-status" class="chip">Connecting</span>
+        <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Toggle theme">
+          <span class="theme-toggle-label">Dark mode</span>
+          <span class="theme-knob"></span>
+        </button>
+      </div>
+    </header>
+
+    <main class="stage">
+      <section id="view-home" class="view view-home">
+        <div class="hero-copy">
+          <p class="kicker accent">Image + clinical data</p>
+          <h1>
+            Multimodal AI
+            <span>Skin Lesion Analysis</span>
+          </h1>
+          <p class="subtitle">
+            AI-assisted early skin lesion classification that fuses a dermoscopic image with age, sex, and lesion location.
+          </p>
+          <button id="start-btn" class="btn-primary" type="button">Start Analysis</button>
+        </div>
+
+        <aside class="hero-panel" aria-hidden="true">
+          <p class="panel-label">Analysis pipeline</p>
+          <div class="arch">
+            <div class="arch-row">
+              <div class="arch-node">Image</div>
+              <span class="arch-arrow">→</span>
+              <div class="arch-node">Visual encoder</div>
+            </div>
+            <div class="arch-row">
+              <div class="arch-node">Age · Sex · Site</div>
+              <span class="arch-arrow">→</span>
+              <div class="arch-node">Clinical encoder</div>
+            </div>
+            <div class="arch-fusion">Multimodal fusion</div>
+            <div class="arch-row">
+              <div class="arch-node">7-class diagnosis</div>
+              <span class="arch-arrow">→</span>
+              <div class="arch-node">Calibrated confidence</div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section id="view-analysis" class="view view-analysis" hidden>
+        <article class="card upload-card">
+          <div class="card-head">
+            <h2>Lesion image</h2>
+            <span id="image-status" class="quiet">No image</span>
+          </div>
+          <div id="dropzone" class="dropzone" tabindex="0">
+            <input id="file-input" type="file" accept=".jpg,.jpeg,.png,.webp,.bmp,image/jpeg,image/png,image/webp,image/bmp" hidden />
+            <div id="drop-empty" class="drop-empty">
+              <div class="upload-mark">
+                <svg viewBox="0 0 48 48" width="40" height="40" fill="none">
+                  <path d="M24 8v20M24 8l-7 7M24 8l7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10 30v6a4 4 0 0 0 4 4h20a4 4 0 0 0 4-4v-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <strong>Drop lesion image here</strong>
+              <p>or browse files from anywhere on your computer</p>
+              <span class="formats">JPG · JPEG · PNG · WEBP · BMP</span>
+            </div>
+            <div id="drop-preview" class="drop-preview" hidden>
+              <img id="preview-img" alt="Lesion preview" />
+            </div>
+          </div>
+          <div class="file-row">
+            <p id="file-meta" class="quiet truncate"></p>
+            <div class="file-actions">
+              <button id="replace-btn" class="btn-ghost" type="button" disabled>Replace</button>
+              <button id="remove-btn" class="btn-ghost danger" type="button" disabled>Remove</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card patient-card">
+          <div class="card-head">
+            <h2>Patient information</h2>
+          </div>
+          <form id="clinical-form" class="patient-form" autocomplete="off">
+            <label>
+              <span>Age</span>
+              <input id="age" name="age" type="number" min="0" max="120" step="1" placeholder="Years" />
+            </label>
+            <label>
+              <span>Sex</span>
+              <select id="sex" name="sex">
+                <option value="">Select</option>
+              </select>
+            </label>
+            <label class="span-2">
+              <span>Lesion location</span>
+              <select id="location" name="location">
+                <option value="">Select</option>
+              </select>
+            </label>
+          </form>
+          <button id="analyze-btn" class="btn-primary full" type="button">Analyze Lesion</button>
+          <p class="hint">The trained multimodal model runs on the server. Predictions are not simulated.</p>
+        </article>
+      </section>
+
+      <section id="view-analyzing" class="view view-analyzing" hidden>
+        <article class="card analyzing-card">
+          <p class="kicker accent">Live inference</p>
+          <h2>Analyzing lesion</h2>
+          <p id="stage-copy" class="subtitle">Image preprocessing</p>
+          <div class="progress-track"><span id="progress-bar"></span></div>
+          <ol id="stage-flow" class="stage-flow"></ol>
+        </article>
+      </section>
+
+      <section id="view-results" class="view view-results" hidden>
+        <div class="results-main">
+          <p class="kicker accent">Analysis complete</p>
+          <p class="result-label">Predicted diagnosis</p>
+          <h2 id="diagnosis">—</h2>
+          <div class="metric-grid">
+            <article class="metric">
+              <p>Confidence</p>
+              <strong id="confidence">—</strong>
+              <span>calibrated probability</span>
+            </article>
+            <article class="metric">
+              <p>Category</p>
+              <strong id="category-value">—</strong>
+              <span id="category-note">risk grouping</span>
+            </article>
+            <article class="metric">
+              <p>Predicted class</p>
+              <strong id="class-code">—</strong>
+              <span>seven-class output</span>
+            </article>
+            <article class="metric">
+              <p>Clinical context</p>
+              <strong id="clinical-summary">—</strong>
+              <span>age · sex · site</span>
+            </article>
+          </div>
+          <button id="reset-btn" class="btn-primary" type="button">Analyze Another Image</button>
+        </div>
+        <article class="card probs-card">
+          <div class="card-head">
+            <h2>Probability distribution</h2>
+            <span class="quiet">All seven classes</span>
+          </div>
+          <div id="prob-list" class="prob-list"></div>
+          <span id="category-badge" class="badge">—</span>
+        </article>
+      </section>
+    </main>
+
+    <footer class="disclaimer">
+      AI-assisted classification for research and educational purposes. This result is not a definitive medical diagnosis.
+    </footer>
+  </div>
+
+  <script src="/assets/script.js"></script>
+</body>
+</html>
