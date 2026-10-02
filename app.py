@@ -1,7 +1,15 @@
 import os
 import hashlib
 
+# CPU deployment resource limits
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+
 import torch
+
+# Keep Render Free resource usage predictable.
+torch.set_num_threads(1)
+torch.set_num_interop_threads(1)
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
