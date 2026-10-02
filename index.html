@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Multimodal AI Framework for Early Skin Cancer Diagnosis</title>
-<script>try{if(localStorage.getItem('skinscope-theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
+<script>
+/* Backend API: replace this with your Render service URL. */
+const API_BASE = 'https://multimodal-ai-framework-for-early-skin.onrender.com/';
+try{if(localStorage.getItem('skinscope-theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -2166,7 +2169,7 @@ function showLoadingThen(target){
 }
 
 async function init(){
-  try{const r=await fetch('/api/mappings');if(r.ok){const d=await r.json();populateSelects(d.sex_mapping,d.location_mapping);return}}
+  try{const r=await fetch(`${API_BASE}/api/mappings`);if(r.ok){const d=await r.json();populateSelects(d.sex_mapping,d.location_mapping);return}}
   catch(e){}
   populateSelects({female:0,male:1,unknown:2},{abdomen:0,acral:1,back:2,chest:3,ear:4,face:5,foot:6,genital:7,hand:8,'lower extremity':9,neck:10,scalp:11,trunk:12,unknown:13,'upper extremity':14});
 }
@@ -2346,8 +2349,8 @@ async function startAnalysis(){
 
 async function runInference(file,age,sex,loc){
   const fd=new FormData();fd.append('image',file);fd.append('age',age);fd.append('sex',sex);fd.append('location',loc);
-  try{const r=await fetch('/api/predict',{method:'POST',body:fd});const d=await r.json();if(window._resolveInference)window._resolveInference(d);return d}
-  catch(e){const err={error:'Failed to connect to server. Make sure server.py is running.'};if(window._resolveInference)window._resolveInference(err);return err}
+  try{const r=await fetch(`${API_BASE}/api/predict`,{method:'POST',body:fd});const d=await r.json();if(window._resolveInference)window._resolveInference(d);return d}
+  catch(e){const err={error:'Failed to connect to the AI server. Check the Render API URL.'};if(window._resolveInference)window._resolveInference(err);return err}
 }
 
 /* ── AI agent planning module ── */
